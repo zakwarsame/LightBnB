@@ -122,32 +122,44 @@ const getAllProperties = (options, limit = 10) => {
    FROM properties
    JOIN property_reviews ON properties.id = property_reviews.property_id
    `;
-
+  const length = queryParams.length;
   if (options.city) {
     queryParams.push(`%${options.city}%`);
     queryString += `WHERE city LIKE $${queryParams.length} `;
   }
 
   if (options.owner_id) {
-    queryString += queryParams.length === 0 ? `WHERE ` : `AND `;
+    if (queryParams.length === 0) queryString += `WHERE `;
+    else {
+      queryString += `AND `;
+    }
     queryParams.push(`%${options.owner_id}%`);
-    queryString += `properties.owner_id = $${queryParams.length} `;
+    queryString += `owner_id = $${queryParams.length} `;
   }
 
   if (options.minimum_price_per_night) {
-    queryString += queryParams.length === 0 ? `WHERE ` : `AND `;
+    if (queryParams.length === 0) queryString += `WHERE `;
+    else {
+      queryString += `AND `;
+    }
     queryParams.push(options.minimum_price_per_night * 100);
-    queryString += `properties.cost_per_night >= $${queryParams.length} `;
+    queryString += `cost_per_night >= $${queryParams.length} `;
   }
 
   if (options.maximum_price_per_night) {
-    queryString += queryParams.length === 0 ? `WHERE ` : `AND `;
+    if (queryParams.length === 0) queryString += `WHERE `;
+    else {
+      queryString += `AND `;
+    }
     queryParams.push(options.maximum_price_per_night * 100);
-    queryString += `properties.cost_per_night <= $${queryParams.length} `;
+    queryString += `cost_per_night <= $${queryParams.length} `;
   }
 
   if (options.minimum_rating) {
-    queryString += queryParams.length === 0 ? `WHERE ` : `AND `;
+    if (queryParams.length === 0) queryString += `WHERE `;
+    else {
+      queryString += `AND `;
+    }
     queryParams.push(parseInt(options.minimum_rating));
     queryString += `property_reviews.rating >= $${queryParams.length} `;
   }
@@ -158,6 +170,8 @@ const getAllProperties = (options, limit = 10) => {
    ORDER BY cost_per_night
    LIMIT $${queryParams.length};
    `;
+
+  // console.log(queryString, queryParams);
 
   return pool
     .query(queryString, queryParams)
