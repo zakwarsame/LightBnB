@@ -34,8 +34,7 @@ const getUserWithEmail = function (email) {
   `;
   return pool
     .query(queryString, [email.toLowerCase()])
-    .then((res) => { res.rows ? res.rows[0] : null
-    })
+    .then((res) => (res.rows.length > 0 ? res.rows[0] : null))
     .catch((err) => {
       console.log(err.message);
     });
@@ -87,7 +86,23 @@ exports.addUser = addUser;
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function (guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  const queryString = `
+  SELECT
+    *
+FROM
+    reservations
+WHERE
+    reservations.guest_id = $1
+    AND reservations.end_date < now()::date
+LIMIT
+    $2
+  `;
+  return pool
+    .query(queryString, [guest_id, limit])
+    .then((res) => res.rows)
+    .catch((err) => {
+      console.log(err.message);
+    });
 };
 exports.getAllReservations = getAllReservations;
 
