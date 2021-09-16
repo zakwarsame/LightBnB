@@ -208,20 +208,20 @@ const addProperty = function (property) {
     )
 VALUES
     (
-        $ 1,
-        $ 2,
-        $ 3,
-        $ 4,
-        $ 5,
-        $ 6,
-        $ 7,
-        $ 8,
-        $ 9,
-        $ 10,
-        $ 11,
-        $ 12,
-        $ 13,
-        $ 14
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7,
+        $8,
+        $9,
+        $10,
+        $11,
+        $12,
+        $13,
+        $14
     ) RETURNING *;
   `;
   values = [property.owner_id,
@@ -238,7 +238,6 @@ VALUES
     property.city,
     property.province,
     property.post_code]
-  console.log(properties);
   return pool
     .query(queryString, values)
     .then((res) => res.rows[0])
