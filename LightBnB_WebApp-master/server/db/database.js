@@ -1,4 +1,4 @@
-const db = require('./db')
+const db = require('.')
 
 /// Users
 
@@ -50,7 +50,7 @@ const addUser = function (user) {
   INSERT INTO users (name, email, password) VALUES ($1, $2, $3)
   RETURNING *`;
   const values = [user.name, user.email, user.password];
-  return pool
+  return db
     .query(queryString, values)
     .then((res) => res.rows[0])
     .catch((err) => {
@@ -141,23 +141,23 @@ const getAllProperties = (options, limit = 10) => {
     queryString += `cost_per_night <= $${queryParams.length} `;
   }
 
+  queryString += `
+  GROUP BY properties.id
+  `;
+
   if (options.minimum_rating) {
-    if (queryParams.length === 0) queryString += `WHERE `;
-    else {
-      queryString += `AND `;
-    }
-    queryParams.push(parseInt(options.minimum_rating));
-    queryString += `property_reviews.rating >= $${queryParams.length} `;
+    queryString += `HAVING `;
+    queryParams.push(options.minimum_rating );
+    queryString += `avg(property_reviews.rating) >= $${queryParams.length} `;
   }
 
   queryParams.push(limit);
   queryString += `
-  GROUP BY properties.id
    ORDER BY cost_per_night
    LIMIT $${queryParams.length};
    `;
 
-  // console.log(queryString, queryParams);
+  console.log(queryString, queryParams);
 
   return db
     .query(queryString, queryParams)
