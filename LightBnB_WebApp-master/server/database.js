@@ -78,13 +78,13 @@ exports.addUser = addUser;
 const getAllReservations = function (guest_id, limit = 10) {
   const queryString = `
   SELECT
-    *
-FROM
+    reservations., avg(rating) as average_rating
+  FROM
     reservations
-WHERE
+  WHERE
     reservations.guest_id = $1
     AND reservations.end_date < now()::date
-LIMIT
+  LIMIT
     $2
   `;
   return pool
