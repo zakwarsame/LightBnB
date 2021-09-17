@@ -1,5 +1,3 @@
-const properties = require("./json/properties.json");
-const users = require("./json/users.json");
 const { Pool } = require("pg");
 
 const pool = new Pool({
@@ -87,7 +85,8 @@ const getAllReservations = function (guest_id, limit = 10) {
     reservations.guest_id = $1
     AND reservations.end_date < now() :: date
   GROUP BY
-    reservations.start_date
+    properties.id,
+    reservations.id
   LIMIT
     $2;
   `;
